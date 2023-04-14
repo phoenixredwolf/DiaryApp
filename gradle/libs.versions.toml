@@ -1,0 +1,123 @@
+[versions]
+# androidx
+ktx = "1.9.0"
+lifecycle-ktx = "2.6.1"
+activity-compose = "1.7.0"
+
+# coil
+coil = "2.3.0"
+
+# compose
+compose-version = "1.4.0"
+compose-navigation = "2.6.0-alpha08"
+compose-runtime = "2.6.1"
+
+# dagger-hilt
+hilt = "2.44.2"
+
+# date-time picker
+datetime = "0.9.0"
+
+# Desugar JDK
+desugar = "2.0.2"
+
+# firebase
+firebase-auth = "21.2.0"
+firebase-storage-ktx = "20.1.0"
+
+# google auth
+gms = "20.4.0"
+
+# message bar compose
+messagebar = "1.0.5"
+
+# material design
+material3 = "1.1.0-beta01"
+material-extended = "1.0.0-beta06"
+
+# Mongo DB Realm
+realm = "1.6.4"
+realm-sync = "1.7.0"
+
+# one tap compose
+onetap = "1.0.0"
+
+# pager-accompanist
+pager = "0.31.0-alpha"
+
+# roomdb
+room = "2.5.1"
+
+# splash api
+splash-core = "1.0.0"
+
+# testing
+junit = "4.13.2"
+junit-ext = "1.1.5"
+espresso = "3.5.1"
+
+
+[libraries]
+# androidx
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
+lifecycle-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-ktx" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
+
+# coil
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+
+# compose
+compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "compose-navigation"}
+compose-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "compose-runtime" }
+compose-tooling = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose-version" }
+compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose-version" }
+
+# dagger-hilt
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+
+# datetime picker
+datetime-picker = { group = "io.github.vanpra.compose-material-dialogs", name = "datetime", version.ref = "datetime" }
+
+# Desugar JDK
+desugar-jdk = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
+
+# firebase
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebase-auth" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebase-storage-ktx" }
+
+# google auth
+google-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "gms" }
+
+# messagebar compose
+message-bar = { group = "com.github.stevdza-san", name = "MessageBarCompose", version.ref = "messagebar" }
+
+# material
+material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+material-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material-extended"}
+
+# mongodb realm
+mongo-realm = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "realm" }
+realm-sync = { group = "io.realm.kotlin", name = "library-sync", version.ref = "realm-sync" }
+
+# one tap compose
+onetap-compose = { group = "com.github.stevdza-san", name = "OneTapCompose", version.ref = "onetap" }
+
+# pager - accompanist
+pager-accompanist = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "pager"}
+
+# roomdb
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room"}
+
+# splash api
+splash-core = { group = "androidx.core", name = "core-splashscreen", version.ref = "splash-core"}
+
+# testing
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+junit-ext = { group = "androidx.test.ext", name = "junit", version.ref = "junit-ext" }
+espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso"}
+compose-ui-testing = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose-version" }
+compose-tooling-testing = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose-version" }
+compose-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "compose-version"}
