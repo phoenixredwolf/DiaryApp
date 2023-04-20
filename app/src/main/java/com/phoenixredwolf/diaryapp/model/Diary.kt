@@ -7,9 +7,9 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.ObjectId
 
-class Diary: RealmObject {
+open class Diary: RealmObject {
     @PrimaryKey
-    var _id: ObjectId = ObjectId.invoke()
+    var _id: ObjectId = ObjectId()
     var ownerId: String = ""
     var mood: String = Mood.Neutral.name
     var title: String = ""

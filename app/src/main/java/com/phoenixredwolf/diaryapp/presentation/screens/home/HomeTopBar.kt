@@ -8,8 +8,12 @@ import androidx.compose.runtime.Composable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopBar(onMenuClicked: () -> Unit) {
+fun HomeTopBar(
+    scrollBehavior: TopAppBarScrollBehavior,
+    onMenuClicked: () -> Unit
+) {
     TopAppBar(
+        scrollBehavior = scrollBehavior,
         navigationIcon = {
             IconButton(onClick = onMenuClicked) {
                 Icon(
