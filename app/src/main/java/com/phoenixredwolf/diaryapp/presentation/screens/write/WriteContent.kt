@@ -1,5 +1,6 @@
 package com.phoenixredwolf.diaryapp.presentation.screens.write
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -24,33 +27,48 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.phoenixredwolf.diaryapp.model.Diary
 import com.phoenixredwolf.diaryapp.model.Mood
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun WriteContent(
+    uiState: UiState,
     paddingValues: PaddingValues,
     pagerState: PagerState,
     title: String,
     onTitleChanged: (String) -> Unit,
     description: String,
-    onDescriptionChanged: (String) -> Unit
+    onDescriptionChanged: (String) -> Unit,
+    onSaveClicked: (Diary) -> Unit
 ) {
     val scrollstate = rememberScrollState()
+    val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = scrollstate.maxValue) {
+        scrollstate.scrollTo(scrollstate.maxValue)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(
-                top = paddingValues.calculateTopPadding(),
-                bottom = paddingValues.calculateBottomPadding()
-            )
+            .imePadding()
+            .navigationBarsPadding()
+            .padding(top = paddingValues.calculateTopPadding())
             .padding(bottom = 24.dp)
             .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.SpaceBetween
@@ -88,7 +106,12 @@ fun WriteContent(
                     unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                 ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = {}),
+                keyboardActions = KeyboardActions(onNext = {
+                    scope.launch {
+                        scrollstate.animateScrollTo(Int.MAX_VALUE)
+                        focusManager.moveFocus(FocusDirection.Down)
+                    }
+                }),
                 maxLines = 1,
                 singleLine = true
             )
@@ -106,14 +129,34 @@ fun WriteContent(
                     unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                 ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = {})
+                keyboardActions = KeyboardActions(onNext = {
+                        focusManager.clearFocus()
+                    }
+                )
             )
         }
         Column(verticalArrangement = Arrangement.Bottom) {
             Spacer(modifier = Modifier.height(12.dp))
             Button(
-                modifier = Modifier.fillMaxWidth().height(54.dp),
-                onClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp),
+                onClick = {
+                          if (uiState.title.isNotEmpty() && uiState.description.isNotEmpty()){
+                              onSaveClicked(
+                                  Diary().apply {
+                                      this.title = uiState.title
+                                      this.description = uiState.description
+                                  }
+                              )
+                          } else {
+                                Toast.makeText(
+                                    context,
+                                    "Title and Description must not be empty",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                          }
+                },
                 shape = Shapes().small
             ) {
                 Text(text="Save")

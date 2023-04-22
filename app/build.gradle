@@ -68,6 +68,8 @@ dependencies {
     implementation libs.compose.ui
 
     // Date Time Picker
+    implementation libs.datetime.calendar
+    implementation libs.datetime.clock
     implementation libs.datetime.picker
 
     // Desugar JDK
