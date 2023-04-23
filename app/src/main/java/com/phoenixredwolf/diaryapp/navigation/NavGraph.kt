@@ -22,7 +22,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.phoenixredwolf.diaryapp.model.GalleryImage
 import com.phoenixredwolf.diaryapp.model.Mood
+import com.phoenixredwolf.diaryapp.model.RequestState
 import com.phoenixredwolf.diaryapp.presentation.components.DisplayAlertDialog
 import com.phoenixredwolf.diaryapp.presentation.screens.auth.AuthenticationScreen
 import com.phoenixredwolf.diaryapp.presentation.screens.auth.AuthenticationViewModel
@@ -31,7 +33,6 @@ import com.phoenixredwolf.diaryapp.presentation.screens.home.HomeViewModel
 import com.phoenixredwolf.diaryapp.presentation.screens.write.WriteScreen
 import com.phoenixredwolf.diaryapp.presentation.screens.write.WriteViewModel
 import com.phoenixredwolf.diaryapp.util.APP_ID
-import com.phoenixredwolf.diaryapp.util.RequestState
 import com.phoenixredwolf.diaryapp.util.WRITE_SCREEN_ARGUMENT_KEY
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
@@ -103,8 +104,9 @@ fun NavGraphBuilder.authenticationRoute(
             },
             oneTapState = oneTapState,
             messageBarState = messageBarState,
-            onTokenIdReceived = { tokenId ->
-                viewModel.signInWithMongAtlas(tokenId = tokenId,
+            onSuccessfulFirebaseSignIn = { tokenId ->
+                viewModel.signInWithMongAtlas(
+                    tokenId = tokenId,
                     onSuccess = {
                         messageBarState.addSuccess("Successfully Authenticated")
                         viewModel.setLoading(false)
@@ -116,6 +118,10 @@ fun NavGraphBuilder.authenticationRoute(
             },
             onDialogDismissed = { message ->
                 messageBarState.addError(Exception(message))
+                viewModel.setLoading(false)
+            },
+            onFailedFirebaseSignIn = {
+                messageBarState.addError(it)
                 viewModel.setLoading(false)
             },
             navigateToHome = navigateToHome
@@ -188,6 +194,7 @@ fun NavGraphBuilder.writeRoute(
     ) {
         val viewModel: WriteViewModel = viewModel()
         val uiState = viewModel.uiState
+        val galleryState = viewModel.galleryState
         val pagerState = rememberPagerState()
         val pageNumber by remember { derivedStateOf{pagerState.currentPage}}
         val context = LocalContext.current
@@ -219,10 +226,24 @@ fun NavGraphBuilder.writeRoute(
                                 }
                             )
             },
+            onImageSelect = {uri ->
+                val type = context.contentResolver.getType(uri)?.split("/")?.last() ?: "jpg"
+                viewModel.addImage(
+                    image = uri,
+                    imageType = type
+                )
+                galleryState.addImage(
+                    GalleryImage(
+                        image = uri,
+                        remoteImagePath = ""
+                    )
+                )
+            },
             onDateTimeUpdated = { viewModel.updateDateTime(zonedDateTime = it) },
             moodName = { Mood.values()[pageNumber].name},
             pagerState = pagerState,
-            uiState = uiState
+            uiState = uiState,
+            galleryState = galleryState
         )
     }
 }

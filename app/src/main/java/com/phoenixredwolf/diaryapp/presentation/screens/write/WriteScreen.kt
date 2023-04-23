@@ -1,11 +1,13 @@
 package com.phoenixredwolf.diaryapp.presentation.screens.write
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.phoenixredwolf.diaryapp.model.Diary
+import com.phoenixredwolf.diaryapp.model.GalleryState
 import com.phoenixredwolf.diaryapp.model.Mood
 import java.time.ZonedDateTime
 
@@ -18,9 +20,11 @@ fun WriteScreen(
     onDescriptionChanged: (String) -> Unit,
     onSaveClicked: (Diary) -> Unit,
     onDateTimeUpdated: (ZonedDateTime) -> Unit,
+    onImageSelect: (Uri) -> Unit,
     moodName: () -> String,
     pagerState: PagerState,
-    uiState: UiState
+    uiState: UiState,
+    galleryState: GalleryState
 ) {
     LaunchedEffect(key1 = uiState.mood) {
         pagerState.scrollToPage(Mood.valueOf(uiState.mood.name).ordinal)
@@ -42,10 +46,12 @@ fun WriteScreen(
                 paddingValues = it,
                 pagerState = pagerState,
                 title = uiState.title,
+                galleryState = galleryState,
                 onTitleChanged = onTitleChanged,
                 description = uiState.description,
                 onDescriptionChanged = onDescriptionChanged,
-                onSaveClicked = onSaveClicked
+                onSaveClicked = onSaveClicked,
+                onImageSelect = onImageSelect
             )
         }
     )

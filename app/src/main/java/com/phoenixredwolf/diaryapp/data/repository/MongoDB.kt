@@ -3,7 +3,7 @@ package com.phoenixredwolf.diaryapp.data.repository
 import android.util.Log
 import com.phoenixredwolf.diaryapp.model.Diary
 import com.phoenixredwolf.diaryapp.util.APP_ID
-import com.phoenixredwolf.diaryapp.util.RequestState
+import com.phoenixredwolf.diaryapp.model.RequestState
 import com.phoenixredwolf.diaryapp.util.toInstant
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query

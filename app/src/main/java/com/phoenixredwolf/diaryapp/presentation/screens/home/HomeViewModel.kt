@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.phoenixredwolf.diaryapp.data.repository.Diaries
 import com.phoenixredwolf.diaryapp.data.repository.MongoDB
-import com.phoenixredwolf.diaryapp.util.RequestState
+import com.phoenixredwolf.diaryapp.model.RequestState
 import kotlinx.coroutines.launch
 
 class HomeViewModel: ViewModel() {

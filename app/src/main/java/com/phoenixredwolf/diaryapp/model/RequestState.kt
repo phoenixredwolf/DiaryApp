@@ -1,4 +1,4 @@
-package com.phoenixredwolf.diaryapp.util
+package com.phoenixredwolf.diaryapp.model
 
 sealed class RequestState<out T> {
     object Idle: RequestState<Nothing>()

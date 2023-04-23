@@ -1,5 +1,6 @@
 package com.phoenixredwolf.diaryapp.presentation.screens.write
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +40,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.phoenixredwolf.diaryapp.model.Diary
+import com.phoenixredwolf.diaryapp.model.GalleryState
 import com.phoenixredwolf.diaryapp.model.Mood
+import com.phoenixredwolf.diaryapp.presentation.components.GalleryUploader
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -49,10 +52,12 @@ fun WriteContent(
     paddingValues: PaddingValues,
     pagerState: PagerState,
     title: String,
+    galleryState: GalleryState,
     onTitleChanged: (String) -> Unit,
     description: String,
     onDescriptionChanged: (String) -> Unit,
-    onSaveClicked: (Diary) -> Unit
+    onSaveClicked: (Diary) -> Unit,
+    onImageSelect: (Uri) -> Unit
 ) {
     val scrollstate = rememberScrollState()
     val context = LocalContext.current
@@ -136,6 +141,13 @@ fun WriteContent(
             )
         }
         Column(verticalArrangement = Arrangement.Bottom) {
+            Spacer(modifier = Modifier.height(12.dp))
+            GalleryUploader(
+                galleryState = galleryState,
+                onAddClicked = { focusManager.clearFocus() },
+                onImageSelect =  onImageSelect,
+                onImageClicked = {}
+            )
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 modifier = Modifier

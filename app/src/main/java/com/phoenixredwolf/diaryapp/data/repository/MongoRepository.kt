@@ -1,7 +1,7 @@
 package com.phoenixredwolf.diaryapp.data.repository
 
 import com.phoenixredwolf.diaryapp.model.Diary
-import com.phoenixredwolf.diaryapp.util.RequestState
+import com.phoenixredwolf.diaryapp.model.RequestState
 import kotlinx.coroutines.flow.Flow
 import org.mongodb.kbson.ObjectId
 import java.time.LocalDate

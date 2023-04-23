@@ -1,5 +1,6 @@
 package com.phoenixredwolf.diaryapp.presentation.screens.write
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,10 +8,14 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import com.phoenixredwolf.diaryapp.data.repository.MongoDB
 import com.phoenixredwolf.diaryapp.model.Diary
+import com.phoenixredwolf.diaryapp.model.GalleryImage
+import com.phoenixredwolf.diaryapp.model.GalleryState
 import com.phoenixredwolf.diaryapp.model.Mood
-import com.phoenixredwolf.diaryapp.util.RequestState
+import com.phoenixredwolf.diaryapp.model.RequestState
 import com.phoenixredwolf.diaryapp.util.WRITE_SCREEN_ARGUMENT_KEY
 import com.phoenixredwolf.diaryapp.util.toRealmInstant
 import io.realm.kotlin.types.RealmInstant
@@ -21,7 +26,9 @@ import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
 import java.time.ZonedDateTime
 
-class WriteViewModel(private val savedStateHandle: SavedStateHandle): ViewModel() {
+class WriteViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+
+    val galleryState = GalleryState()
 
     var uiState by mutableStateOf(UiState())
         private set
@@ -40,22 +47,21 @@ class WriteViewModel(private val savedStateHandle: SavedStateHandle): ViewModel(
     }
 
     private fun fetchSelectedDiary() {
-        if(uiState.selectedDiaryId != null) {
+        if (uiState.selectedDiaryId != null) {
             viewModelScope.launch(Dispatchers.Main) {
                 MongoDB.getSelectedDiary(
-                    diaryId = ObjectId.invoke(uiState.selectedDiaryId!!))
-                    .catch {
+                    diaryId = ObjectId.invoke(uiState.selectedDiaryId!!)
+                ).catch {
                         emit(RequestState.Error(Exception("Diary is already deleted")))
                         Log.d("Delete Diary", "Catch block of fetchSelectedDiary")
+                    }.collect { diary ->
+                        if (diary is RequestState.Success) {
+                            setSelectedDiary(diary = diary.data)
+                            setTitle(title = diary.data.title)
+                            setDescription(description = diary.data.description)
+                            setMood(mood = Mood.valueOf(diary.data.mood))
+                        }
                     }
-                    .collect {diary ->
-                    if(diary is RequestState.Success) {
-                        setSelectedDiary(diary = diary.data)
-                        setTitle(title = diary.data.title)
-                        setDescription(description = diary.data.description)
-                        setMood(mood = Mood.valueOf(diary.data.mood))
-                    }
-                }
             }
         }
     }
@@ -90,7 +96,11 @@ class WriteViewModel(private val savedStateHandle: SavedStateHandle): ViewModel(
         }
     }
 
-    private suspend fun insertDiary(diary: Diary, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    private suspend fun insertDiary(
+        diary: Diary,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
         val result = MongoDB.insertDiary(diary = diary.apply {
             if (uiState.updatedDateTime != null) {
                 date = uiState.updatedDateTime!!
@@ -98,15 +108,21 @@ class WriteViewModel(private val savedStateHandle: SavedStateHandle): ViewModel(
         })
         if (result is RequestState.Success) {
             withContext(Dispatchers.Main) { onSuccess() }
-        } else if (result is RequestState.Error){ withContext(Dispatchers.Main) {
-            onError(result.error.message.toString())
-        }}
+        } else if (result is RequestState.Error) {
+            withContext(Dispatchers.Main) {
+                onError(result.error.message.toString())
+            }
+        }
     }
 
-    private suspend fun updateDiary(diary: Diary, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    private suspend fun updateDiary(
+        diary: Diary,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
         val result = MongoDB.updateDiary(diary.apply {
             _id = ObjectId.invoke(uiState.selectedDiaryId!!)
-            date =if (uiState.updatedDateTime != null) {
+            date = if (uiState.updatedDateTime != null) {
                 uiState.updatedDateTime!!
             } else {
                 uiState.selectedDiary!!.date
@@ -124,8 +140,7 @@ class WriteViewModel(private val savedStateHandle: SavedStateHandle): ViewModel(
     }
 
     fun deleteDiary(
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
+        onSuccess: () -> Unit, onError: (String) -> Unit
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             if (uiState.selectedDiaryId != null) {
@@ -136,6 +151,25 @@ class WriteViewModel(private val savedStateHandle: SavedStateHandle): ViewModel(
                     withContext(Dispatchers.Main) { onError(result.error.message.toString()) }
                 }
             }
+        }
+    }
+
+    fun addImage(image: Uri, imageType: String) {
+        val remoteImagePath =
+            "images/${FirebaseAuth.getInstance().currentUser?.uid}/${image.lastPathSegment}" +
+                    "-${System.currentTimeMillis()}.$imageType"
+        galleryState.addImage(
+            GalleryImage(
+                image = image, remoteImagePath = remoteImagePath
+            )
+        )
+    }
+
+    private fun uploadImagesToFirebase() {
+        val storage = FirebaseStorage.getInstance().reference
+        galleryState.images.forEach {galleryImage ->
+            val imagePath = storage.child(galleryImage.remoteImagePath)
+            imagePath.putFile(galleryImage.image)
         }
     }
 }
