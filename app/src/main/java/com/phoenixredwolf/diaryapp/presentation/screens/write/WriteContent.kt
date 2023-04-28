@@ -40,9 +40,11 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.phoenixredwolf.diaryapp.model.Diary
+import com.phoenixredwolf.diaryapp.model.GalleryImage
 import com.phoenixredwolf.diaryapp.model.GalleryState
 import com.phoenixredwolf.diaryapp.model.Mood
 import com.phoenixredwolf.diaryapp.presentation.components.GalleryUploader
+import io.realm.kotlin.ext.toRealmList
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -57,7 +59,8 @@ fun WriteContent(
     description: String,
     onDescriptionChanged: (String) -> Unit,
     onSaveClicked: (Diary) -> Unit,
-    onImageSelect: (Uri) -> Unit
+    onImageSelect: (Uri) -> Unit,
+    onImageClicked: (GalleryImage) -> Unit
 ) {
     val scrollstate = rememberScrollState()
     val context = LocalContext.current
@@ -146,7 +149,7 @@ fun WriteContent(
                 galleryState = galleryState,
                 onAddClicked = { focusManager.clearFocus() },
                 onImageSelect =  onImageSelect,
-                onImageClicked = {}
+                onImageClicked = onImageClicked
             )
             Spacer(modifier = Modifier.height(12.dp))
             Button(
@@ -159,6 +162,7 @@ fun WriteContent(
                                   Diary().apply {
                                       this.title = uiState.title
                                       this.description = uiState.description
+                                      this.images = galleryState.images.map { it.remoteImagePath }.toRealmList()
                                   }
                               )
                           } else {

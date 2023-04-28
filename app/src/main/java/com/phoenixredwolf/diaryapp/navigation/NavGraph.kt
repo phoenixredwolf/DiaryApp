@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -22,7 +23,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.phoenixredwolf.diaryapp.model.GalleryImage
 import com.phoenixredwolf.diaryapp.model.Mood
 import com.phoenixredwolf.diaryapp.model.RequestState
 import com.phoenixredwolf.diaryapp.presentation.components.DisplayAlertDialog
@@ -136,11 +136,13 @@ fun NavGraphBuilder.homeRoute(
     onDataLoaded: () -> Unit
 ) {
     composable(route = Screen.Home.route) {
-        val viewModel: HomeViewModel = viewModel()
+        val viewModel: HomeViewModel = hiltViewModel()
         val diaries by viewModel.diaries
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         var signOutDiaglogOpened by remember { mutableStateOf(false) }
+        var deleteAllDiaglogOpened by remember { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
+        val context = LocalContext.current
 
         LaunchedEffect(key1 = diaries) {
             if (diaries !is RequestState.Loading) {
@@ -156,9 +158,15 @@ fun NavGraphBuilder.homeRoute(
                     drawerState.open()
                 }
             },
-            onSignOutClicked = {signOutDiaglogOpened = true},
+            onSignOutClicked = { signOutDiaglogOpened = true },
+            onDeleteAllClicked = { deleteAllDiaglogOpened = true },
             navigateToWrite = navigateToWrite,
-            navigateToWriteWithArgs = navigateToWriteWithArgs
+            navigateToWriteWithArgs = navigateToWriteWithArgs,
+            onDateSelected = {
+                viewModel.getDiaries(zonedDateTime = it)
+            },
+            onDateReset = { viewModel.getDiaries() },
+            dateIsSelected = viewModel.dateIsSelected
         )
         DisplayAlertDialog(
             title = "Sign Out",
@@ -177,6 +185,35 @@ fun NavGraphBuilder.homeRoute(
                 }
             }
         )
+        DisplayAlertDialog(
+            title = "Delete All Diaries",
+            message = "Are you sure you want to permanently delete all diaries?",
+            dialogOpened = deleteAllDiaglogOpened,
+            onDialogClosed = { deleteAllDiaglogOpened = false },
+            onYesClicked = {
+                scope.launch(Dispatchers.IO) {
+                    viewModel.deleteAllDiaries(
+                        onSuccess = {
+                            Toast.makeText(
+                                context,
+                                "All diaries delete",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            scope.launch { drawerState.close() }
+                        },
+                        onError = {
+                            Toast.makeText(
+                                context,
+                                if(it.message == "No Internet Connection.")
+                                    "An internet connection is required for this operation"
+                                else it.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            scope.launch { drawerState.close() }}
+                    )
+                }
+            }
+        )
     }
 }
 
@@ -192,7 +229,7 @@ fun NavGraphBuilder.writeRoute(
             defaultValue = null
         })
     ) {
-        val viewModel: WriteViewModel = viewModel()
+        val viewModel: WriteViewModel = hiltViewModel()
         val uiState = viewModel.uiState
         val galleryState = viewModel.galleryState
         val pagerState = rememberPagerState()
@@ -228,22 +265,14 @@ fun NavGraphBuilder.writeRoute(
             },
             onImageSelect = {uri ->
                 val type = context.contentResolver.getType(uri)?.split("/")?.last() ?: "jpg"
-                viewModel.addImage(
-                    image = uri,
-                    imageType = type
-                )
-                galleryState.addImage(
-                    GalleryImage(
-                        image = uri,
-                        remoteImagePath = ""
-                    )
-                )
+                viewModel.addImage(image = uri, imageType = type)
             },
             onDateTimeUpdated = { viewModel.updateDateTime(zonedDateTime = it) },
             moodName = { Mood.values()[pageNumber].name},
             pagerState = pagerState,
             uiState = uiState,
-            galleryState = galleryState
+            galleryState = galleryState,
+            onImageDeleteClicked = { galleryState.removeImage(it) }
         )
     }
 }

@@ -43,7 +43,7 @@ import kotlin.math.max
 @Composable
 fun Gallery(
     modifier: Modifier = Modifier,
-    images: List<String>,
+    images: List<Any>,
     imageSize: Dp = 40.dp,
     spaceBetween: Dp = 10.dp,
     imageShape: CornerBasedShape = Shapes().small
@@ -133,15 +133,15 @@ fun GalleryUploader(
             Spacer(modifier = Modifier.width(spaceBetween))
             galleryState.images.take(numberOfVisibleImages.value).forEach {galleryImage ->
                 AsyncImage(
+                    modifier = Modifier
+                        .clip(imageShape)
+                        .size(imageSize)
+                        .clickable { onImageClicked(galleryImage) },
                     model = ImageRequest
                         .Builder(LocalContext.current)
                         .data(galleryImage.image)
                         .crossfade(true)
                         .build(),
-                    modifier = Modifier
-                        .clip(imageShape)
-                        .size(imageSize)
-                        .clickable { onImageClicked(galleryImage) },
                     contentDescription = "Gallery Image",
                     contentScale = ContentScale.Crop
                 )
@@ -156,7 +156,6 @@ fun GalleryUploader(
             }
         }
     }
-
 }
 
 @Composable

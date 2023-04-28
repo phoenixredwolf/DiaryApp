@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.phoenixredwolf.diaryapp.R
 import com.phoenixredwolf.diaryapp.data.repository.Diaries
 import com.phoenixredwolf.diaryapp.model.RequestState
+import java.time.ZonedDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -29,19 +31,31 @@ fun HomeScreen(
     diaries: Diaries,
     drawerState: DrawerState,
     onSignOutClicked: () -> Unit,
+    onDeleteAllClicked: () -> Unit,
     onMenuClicked: () -> Unit,
     navigateToWrite: () -> Unit,
-    navigateToWriteWithArgs: (String) -> Unit
+    navigateToWriteWithArgs: (String) -> Unit,
+    dateIsSelected: Boolean,
+    onDateSelected: (ZonedDateTime) -> Unit,
+    onDateReset: () -> Unit
 ) {
     var padding by remember { mutableStateOf(PaddingValues()) }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     NavigationDrawer(
-        drawerState = drawerState, onSignOutClicked = onSignOutClicked
+        drawerState = drawerState,
+        onSignOutClicked = onSignOutClicked,
+        onDeleteAllClicked = onDeleteAllClicked
     ) {
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
-            HomeTopBar(scrollBehavior, onMenuClicked)
+            HomeTopBar(
+                scrollBehavior,
+                onMenuClicked,
+                dateIsSelected = dateIsSelected,
+                onDateSelected = onDateSelected,
+                onDateReset = onDateReset
+            )
         }, floatingActionButton = {
             FloatingActionButton(
                 modifier = Modifier.padding(
@@ -82,7 +96,10 @@ fun HomeScreen(
 
 @Composable
 fun NavigationDrawer(
-    drawerState: DrawerState, onSignOutClicked: () -> Unit, content: @Composable () -> Unit
+    drawerState: DrawerState,
+    onSignOutClicked: () -> Unit,
+    onDeleteAllClicked: () -> Unit,
+    content: @Composable () -> Unit
 ) {
     ModalNavigationDrawer(
         drawerState = drawerState, drawerContent = {
@@ -99,16 +116,33 @@ fun NavigationDrawer(
                         contentDescription = "Logo Image"
                     )
                 }
-                NavigationDrawerItem(label = {
-                    Row(modifier = Modifier.padding(horizontal = 12.dp)) {
-                        Image(
-                            painter = painterResource(id = R.drawable.google_logo),
-                            contentDescription = "Google Logo"
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(text = "Sign Out")
-                    }
-                }, selected = false, onClick = onSignOutClicked)
+                NavigationDrawerItem(
+                    label = {
+                        Row(modifier = Modifier.padding(horizontal = 12.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete All Diaries",
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(text = "Delete All Diaries")
+                        }
+                    },
+                    selected = false, onClick = onDeleteAllClicked
+                )
+                NavigationDrawerItem(
+                    label = {
+                        Row(modifier = Modifier.padding(horizontal = 12.dp)) {
+                            Image(
+                                painter = painterResource(id = R.drawable.google_logo),
+                                contentDescription = "Google Logo"
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(text = "Sign Out")
+                        }
+                    },
+                    selected = false, onClick = onSignOutClicked
+                )
 
             })
         }, content = content

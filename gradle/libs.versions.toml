@@ -14,6 +14,7 @@ compose-runtime = "2.6.1"
 
 # dagger-hilt
 hilt = "2.44.2"
+hilt-navigation = "1.0.0"
 
 # date-time picker
 datetime = "1.0.2"
@@ -75,6 +76,7 @@ compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compos
 # dagger-hilt
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation"}
 
 # datetime picker
 datetime-calendar = { group = "com.maxkeppeler.sheets-compose-dialogs", name = "calendar", version.ref = "datetime" }

@@ -85,6 +85,7 @@ dependencies {
     // Hilt
     implementation libs.hilt.android
     kapt libs.hilt.compiler
+    implementation libs.hilt.navigation
 
     // Message Bar Compose
     implementation libs.message.bar
