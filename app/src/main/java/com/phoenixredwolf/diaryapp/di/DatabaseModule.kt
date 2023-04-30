@@ -2,8 +2,7 @@ package com.phoenixredwolf.diaryapp.di
 
 import android.content.Context
 import androidx.room.Room
-import com.phoenixredwolf.diaryapp.data.database.ImagesDatabase
-import com.phoenixredwolf.diaryapp.util.IMAGES_DATABASE
+import com.phoenixredwolf.util.IMAGES_DATABASE
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,20 +18,20 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(
         @ApplicationContext context: Context
-    ): ImagesDatabase {
+    ): com.phoenixredwolf.mongo.database.ImagesDatabase {
         return Room.databaseBuilder(
             context = context,
-            klass = ImagesDatabase::class.java,
+            klass = com.phoenixredwolf.mongo.database.ImagesDatabase::class.java,
             name = IMAGES_DATABASE
         ).build()
     }
 
     @Singleton
     @Provides
-    fun provideFirstDao(database: ImagesDatabase) = database.imageToUploadDao()
+    fun provideFirstDao(database: com.phoenixredwolf.mongo.database.ImagesDatabase) = database.imageToUploadDao()
 
     @Singleton
     @Provides
-    fun provideSecondDao(database: ImagesDatabase) = database.imageToDeleteDao()
+    fun provideSecondDao(database: com.phoenixredwolf.mongo.database.ImagesDatabase) = database.imageToDeleteDao()
 
 }

@@ -3,19 +3,20 @@ package com.phoenixredwolf.diaryapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.FirebaseApp
-import com.phoenixredwolf.diaryapp.data.database.ImageToDeleteDao
-import com.phoenixredwolf.diaryapp.data.database.ImageToUploadDao
-import com.phoenixredwolf.diaryapp.navigation.Screen
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storageMetadata
 import com.phoenixredwolf.diaryapp.navigation.SetupNavGraph
-import com.phoenixredwolf.diaryapp.ui.theme.DiaryAppTheme
-import com.phoenixredwolf.diaryapp.util.APP_ID
-import com.phoenixredwolf.diaryapp.util.retryDeletingImageFromFirebase
-import com.phoenixredwolf.diaryapp.util.retryUploadingImageToFirebase
+import com.phoenixredwolf.util.APP_ID
+import com.phoenixredwolf.mongo.database.entity.ImageToDelete
+import com.phoenixredwolf.mongo.database.entity.ImageToUpload
+import com.phoenixredwolf.ui.theme.DiaryAppTheme
+import com.phoenixredwolf.util.Screen
 import dagger.hilt.android.AndroidEntryPoint
 import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.CoroutineScope
@@ -26,9 +27,9 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var imageToUploadDao: ImageToUploadDao
+    lateinit var imageToUploadDao: com.phoenixredwolf.mongo.database.ImageToUploadDao
     @Inject
-    lateinit var imageToDeleteDao: ImageToDeleteDao
+    lateinit var imageToDeleteDao: com.phoenixredwolf.mongo.database.ImageToDeleteDao
     var keepSplashOpen = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,8 +61,8 @@ class MainActivity : ComponentActivity() {
 
 private fun cleanupCheck(
     scope: CoroutineScope,
-    imageToUploadDao: ImageToUploadDao,
-    imageToDeleteDao: ImageToDeleteDao
+    imageToUploadDao: com.phoenixredwolf.mongo.database.ImageToUploadDao,
+    imageToDeleteDao: com.phoenixredwolf.mongo.database.ImageToDeleteDao
 ) {
     scope.launch(Dispatchers.IO) {
         val result = imageToUploadDao.getAllImages()
@@ -92,4 +93,25 @@ private fun cleanupCheck(
 private fun getStartDestination(): String {
     val user = App.Companion.create(APP_ID).currentUser
     return if(user != null && user.loggedIn) Screen.Home.route else Screen.Authentication.route
+}
+
+private fun retryUploadingImageToFirebase(
+    imageToUpload: ImageToUpload,
+    onSuccess: () -> Unit
+) {
+    val storage = FirebaseStorage.getInstance().reference
+    storage.child(imageToUpload.remoteImagePath).putFile(
+        imageToUpload.imageUri.toUri(),
+        storageMetadata {  },
+        imageToUpload.sessionUri.toUri()
+    ).addOnSuccessListener { onSuccess() }
+}
+
+private fun retryDeletingImageFromFirebase(
+    imageToDelete: ImageToDelete,
+    onSuccess: () -> Unit
+) {
+    val storage = FirebaseStorage.getInstance().reference
+    storage.child(imageToDelete.remoteImagePath).delete()
+        .addOnSuccessListener { onSuccess() }
 }

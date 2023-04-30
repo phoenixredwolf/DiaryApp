@@ -1,7 +1,7 @@
 package com.phoenixredwolf.diaryapp.di
 
 import android.content.Context
-import com.phoenixredwolf.diaryapp.connectivity.NetworkConnectivityObserver
+import com.phoenixredwolf.util.connectivity.NetworkConnectivityObserver
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

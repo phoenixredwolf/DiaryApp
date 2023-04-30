@@ -1,0 +1,57 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.phoenixredwolf.ui'
+    compileSdk ProjectConfig.compileSdk
+
+    defaultConfig {
+        minSdk ProjectConfig.minSdk
+        targetSdk ProjectConfig.targetSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion ProjectConfig.extensionVersion
+    }
+}
+
+dependencies {
+
+    implementation libs.material3
+    implementation libs.activity.compose
+    implementation libs.coil.compose
+    implementation libs.realm.sync
+    implementation libs.compose.tooling
+    coreLibraryDesugaring libs.desugar.jdk
+
+    // Testing
+    testImplementation libs.junit
+    androidTestImplementation libs.junit.ext
+    androidTestImplementation libs.espresso
+    androidTestImplementation libs.compose.ui.testing
+    debugImplementation libs.compose.tooling.testing
+    debugImplementation libs.compose.manifest
+
+}
