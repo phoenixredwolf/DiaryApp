@@ -26,7 +26,7 @@ typealias Drawable = com.phoenixredwolf.ui.R.drawable
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(
+internal fun HomeScreen(
     diaries: com.phoenixredwolf.mongo.repository.Diaries,
     drawerState: DrawerState,
     onSignOutClicked: () -> Unit,
@@ -94,7 +94,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun NavigationDrawer(
+internal fun NavigationDrawer(
     drawerState: DrawerState,
     onSignOutClicked: () -> Unit,
     onDeleteAllClicked: () -> Unit,

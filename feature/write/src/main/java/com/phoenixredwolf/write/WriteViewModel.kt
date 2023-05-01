@@ -1,5 +1,6 @@
 package com.phoenixredwolf.write
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -31,7 +32,7 @@ import java.time.ZonedDateTime
 import javax.inject.Inject
 
 @HiltViewModel
-class WriteViewModel @Inject constructor(
+internal class WriteViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val imagesToUploadDao: com.phoenixredwolf.mongo.database.ImageToUploadDao,
     private val imageToDeleteDao: com.phoenixredwolf.mongo.database.ImageToDeleteDao
@@ -104,6 +105,7 @@ class WriteViewModel @Inject constructor(
         uiState = uiState.copy(mood = mood)
     }
 
+    @SuppressLint("NewApi")
     fun updateDateTime(zonedDateTime: ZonedDateTime) {
         uiState = uiState.copy(updatedDateTime = zonedDateTime.toInstant().toRealmInstant())
     }
@@ -256,7 +258,7 @@ class WriteViewModel @Inject constructor(
     }
 }
 
-data class UiState(
+internal data class UiState(
     val selectedDiaryId: String? = null,
     val selectedDiary: Diary? = null,
     val title: String = "",

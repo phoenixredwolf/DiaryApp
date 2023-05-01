@@ -1,5 +1,6 @@
 package com.phoenixredwolf.mongo.repository
 
+import android.annotation.SuppressLint
 import android.util.Log
 import com.phoenixredwolf.util.APP_ID
 import com.phoenixredwolf.util.model.Diary
@@ -16,6 +17,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import org.mongodb.kbson.ObjectId
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -45,6 +48,7 @@ object MongoDB : MongoRepository {
         }
     }
 
+    @SuppressLint("NewApi")
     override fun getAllDiaries(): Flow<Diaries> {
         return if (user != null) {
             try {
@@ -157,14 +161,26 @@ object MongoDB : MongoRepository {
         }
     }
 
+    @SuppressLint("NewApi")
     override fun getFilteredDiaries(zonedDateTime: ZonedDateTime): Flow<Diaries> {
         return if (user != null) {
             try {
                 realm.query<Diary>(query =
                 "ownerId == $0 AND date < $1 AND date > $2",
                     user.id,
-                    RealmInstant.from(zonedDateTime.plusDays(1).toInstant().epochSecond,0),
-                    RealmInstant.from(zonedDateTime.minusDays(1).toInstant().epochSecond, 0)
+                    RealmInstant.from(
+                        LocalDateTime.of(
+                            zonedDateTime.toLocalDate().plusDays(1),
+                            LocalTime.MIDNIGHT
+                        ).toEpochSecond(zonedDateTime.offset),
+                        0
+                    ),
+                    RealmInstant.from(
+                        LocalDateTime.of(
+                            zonedDateTime.toLocalDate(),
+                            LocalTime.MIDNIGHT
+                        ).toEpochSecond(zonedDateTime.offset),
+                        0)
                 ).asFlow().map { result ->
                     RequestState.Success(
                         data = result.list.groupBy {

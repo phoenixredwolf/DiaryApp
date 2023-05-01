@@ -1,5 +1,6 @@
 package com.phoenixredwolf.home
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -30,7 +31,7 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeContent(
+internal fun HomeContent(
     paddingValues: PaddingValues, diaryNotes: Map<LocalDate, List<Diary>>, onClick: (String) -> Unit
 ) {
     if (diaryNotes.isNotEmpty()) {
@@ -55,8 +56,9 @@ fun HomeContent(
     }
 }
 
+@SuppressLint("NewApi")
 @Composable
-fun DateHeader(localDate: LocalDate) {
+internal fun DateHeader(localDate: LocalDate) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -102,7 +104,7 @@ fun DateHeader(localDate: LocalDate) {
 }
 
 @Composable
-fun EmptyPage(
+internal fun EmptyPage(
     title: String = "Empty Diary", subtitle: String = "Write something."
 ) {
     Column(
@@ -127,6 +129,7 @@ fun EmptyPage(
     }
 }
 
+@SuppressLint("NewApi")
 @Composable
 @Preview(showBackground = true)
 fun DateHeaderPreview() {

@@ -24,7 +24,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
-        coreLibraryDesugaringEnabled true
     }
     kotlinOptions {
         jvmTarget = '17'
@@ -44,7 +43,6 @@ dependencies {
     implementation libs.coil.compose
     implementation libs.realm.sync
     implementation libs.compose.tooling
-    coreLibraryDesugaring libs.desugar.jdk
 
     // Testing
     testImplementation libs.junit

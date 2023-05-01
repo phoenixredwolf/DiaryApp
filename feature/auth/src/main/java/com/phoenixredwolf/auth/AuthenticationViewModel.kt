@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class AuthenticationViewModel : ViewModel() {
+internal class AuthenticationViewModel : ViewModel() {
 
     var authenticated = mutableStateOf(false)
         private set

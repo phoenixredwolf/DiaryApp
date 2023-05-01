@@ -20,7 +20,7 @@ import com.phoenixredwolf.ui.components.GoogleButton
 
 typealias Drawables = com.phoenixredwolf.ui.R.drawable
 @Composable
-fun AuthenticationContent(
+internal fun AuthenticationContent(
     loadingState: Boolean,
     onButtonClicked: () -> Unit
 ) {

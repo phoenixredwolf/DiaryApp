@@ -1,5 +1,6 @@
 package com.phoenixredwolf.write
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
@@ -30,8 +31,8 @@ import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockSelection
-import com.phoenixredwolf.util.model.Diary
 import com.phoenixredwolf.ui.components.DisplayAlertDialog
+import com.phoenixredwolf.util.model.Diary
 import com.phoenixredwolf.util.toInstant
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -42,9 +43,10 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
+@SuppressLint("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WriteTopBar(
+internal fun WriteTopBar(
     selectedDiary: Diary?,
     onBackPressed: () -> Unit,
     onDeleteClicked: () -> Unit,

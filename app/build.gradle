@@ -64,6 +64,9 @@ dependencies {
     implementation libs.compose.tooling
     implementation libs.compose.ui
 
+    // Desugar JDK
+    coreLibraryDesugaring libs.desugar.jdk
+
     // Firebase
     implementation libs.firebase.auth
     implementation libs.firebase.storage

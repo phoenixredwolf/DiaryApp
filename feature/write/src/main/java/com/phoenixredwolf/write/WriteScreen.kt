@@ -42,7 +42,7 @@ import java.time.ZonedDateTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun WriteScreen(
+internal fun WriteScreen(
     onBackPressed: () -> Unit,
     onDeleteClicked: () -> Unit,
     onTitleChanged: (String) -> Unit,
@@ -108,7 +108,7 @@ fun WriteScreen(
 }
 
 @Composable
-fun ZoomableImage(
+internal fun ZoomableImage(
     selectedGalleryImage: GalleryImage,
     onCloseClicked: () -> Unit,
     onDeleteClicked: () -> Unit
