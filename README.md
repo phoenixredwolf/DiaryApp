@@ -1,6 +1,6 @@
 # Android Diary App
 
-Both signle and multi-module examples.
+Both single and multi-module examples.
 
 ### Tech Stack
 
